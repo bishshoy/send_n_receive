@@ -16,7 +16,25 @@ fi
 
 echo "Pouring into buckets of size 2G in ${CONTAINER_NAME}"
 
-tar cf - -C "$(dirname "$1")" --transform="s|^./||" "$(basename "$1")" | split -b 2G - "${CONTAINER_NAME}/bucket.tar.part-"
+OS=$(uname)
+
+if [ "$OS" = "Linux" ]; then
+  TAR_CMD="tar"
+  TAR_OPTS="--transform=\"s|^./||\""
+elif [ "$OS" = "Darwin" ]; then
+  if command -v gtar &> /dev/null; then
+    TAR_CMD="gtar"
+    TAR_OPTS="--transform=\"s|^./||\""
+  else
+    TAR_CMD="tar"
+    TAR_OPTS=""
+  fi
+else
+  echo "Unsupported OS: $OS"
+  exit 1
+fi
+
+eval "$TAR_CMD cf - -C \"$(dirname "$1")\" $TAR_OPTS \"$(basename "$1")\" | split -b 2G - \"${CONTAINER_NAME}/bucket.tar.part-\""
 
 num_files=$(find "${CONTAINER_NAME}" -maxdepth 1 -type f | wc -l)
 
