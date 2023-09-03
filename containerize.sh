@@ -22,13 +22,8 @@ if [ "$OS" = "Linux" ]; then
   TAR_CMD="tar"
   TAR_OPTS="--transform=\"s|^./||\""
 elif [ "$OS" = "Darwin" ]; then
-  if command -v gtar &> /dev/null; then
-    TAR_CMD="gtar"
-    TAR_OPTS="--transform=\"s|^./||\""
-  else
-    TAR_CMD="tar"
-    TAR_OPTS=""
-  fi
+  TAR_CMD="gtar"
+  TAR_OPTS="--transform=\"s|^./||\""
 else
   echo "Unsupported OS: $OS"
   exit 1
